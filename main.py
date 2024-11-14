@@ -4,29 +4,17 @@ import numpy as np
 import os
 import torch
 import time
-from util.adjacency_matrix import make_graph_inputs
-from Lane_level_models.FDL import FDL
-from Lane_level_models.GRU import GRU
 from Lane_level_models.LSTM import LSTM
-from Lane_level_models.TMCNN import TMCNN
-from Lane_level_models.MDL import MDL
 from Lane_level_models.CNN_LSTM import CNNLSTM
-from Lane_level_models.STA_ED import STA_ED
-from Lane_level_models.Cat_RF_LSTM import Cat_RF_LSTM
-from Lane_level_models.HGCN import HGCN
-from Lane_level_models.GCN_GRU import GCN_GRU
-from Lane_level_models.ST_AFN import ST_AFN
-from Lane_level_models.STMGG import STMGG
-from GraphMLP.GraphMLP import GraphMLP
-from Lane_level_models.DLinear import Dlinear
-from Graph_model.AGCRN import AGCRN
-from Graph_model.MTGNN import MTGNN
 
 
-device = torch.device ("cuda:1")
+device = torch.device("cpu")
+model = CNNLSTM(input_dim=10, num_nodes=43, horizon=6, batch_size=64, seq_len=12, device=device, hidden_dim=64)
+
+model.to(device)
 
 def count_parameters(model):
-    """统计模型参数"""
+    
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 class DataLoader (object):
@@ -253,7 +241,7 @@ if __name__ == '__main__':
     epsilon = 1.0e-3
     steps = [20, 30, 40, 50]
     lr_decay_ratio = 0.1
-    epochs = 100
+    epochs = 5
     max_grad_norm = 5
     patience = 10
     min_val_loss = float ('inf')
@@ -261,7 +249,7 @@ if __name__ == '__main__':
     data = load_dataset (dataset_dir, batch_size, horizon)
     standard_scaler = data['scaler']
 
-    model = AGCRN(input_dim, num_nodes, horizon, batch_size, seq_len,device)
+    model = CNNLSTM(input_dim, num_nodes, horizon, batch_size, seq_len, device)
     model.to (device)
 
     """
